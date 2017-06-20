@@ -6,10 +6,37 @@ Created on Fri Jun  2 13:04:03 2017
 @author: robert
 """
 import json
+import csv
 from collections import defaultdict
 
 readfile = open("/home/robert/Documents/PubBiasJazz/pgc_data/pgc_extracted_1-12014.json", 'rb')
 extracted_data = json.load(readfile)
+
+
+reader_region = csv.reader(open('UNSD_region.csv'))
+region = {}
+for row in reader_region:
+    key = row[0]
+    if key in region:
+        pass
+    region[key] = row[1:]
+
+reader_development = csv.reader(open('UNSD_development.csv'))
+development = {}
+for row in reader_development:
+    key = row[0]
+    if key in development:
+        pass
+    region[key] = row[1:]
+
+reader_subregion = csv.reader(open('UNSD_subregion.csv'))
+subregion = {}
+for row in reader_subregion:
+    key = row[0]
+    if key in subregion:
+        pass
+    subregion[key] = row[1:]
+
 
 country_list = []
 for entry in extracted_data:
@@ -203,7 +230,32 @@ for entry in extracted_data:
             tool_by_year[tool].append(entry['year'])
 
 
+def regionize(list_to_be_regionized):
+    region_list = []
+    for k in region:
+        for j in list_to_be_regionized:
+            if k == j:
+                for item in region[k]:
+                    region_list.append(item)
+    return(region_list)
 
+def developize(list_to_be_developized):
+    develop_list = []
+    for k in development:
+        for j in list_to_be_developized:
+            if k == j:
+                for item in development[k]:
+                    develop_list.append(item)
+    return(develop_list)
+
+def subregionize(list_to_be_subregionized):
+    subregion_list = []
+    for k in subregion:
+        for j in list_to_be_subregionized:
+            if k == j:
+                for item in subregion[k]:
+                    subregion_list.append(item)
+    return(subregion_list)
 
 def dict_count(mm):    
     mismatch_dict = defaultdict(int)
