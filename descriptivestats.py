@@ -27,7 +27,7 @@ for row in reader_development:
     key = row[0]
     if key in development:
         pass
-    region[key] = row[1:]
+    development[key] = row[1:]
 
 reader_subregion = csv.reader(open('UNSD_subregion.csv'))
 subregion = {}
@@ -37,6 +37,16 @@ for row in reader_subregion:
         pass
     subregion[key] = row[1:]
 
+reader_all = csv.reader(open('UNSD_all.csv'))
+unsdAll = {}
+for row in reader_all:
+    key = row[0]
+    if key in unsdAll:
+        pass
+    unsdAll[key] = {}
+    unsdAll[key]['development'] = row[1]
+    unsdAll[key]['region'] = row[2]
+    unsdAll[key]['subregion'] = row[3]
 
 country_list = []
 for entry in extracted_data:
@@ -230,6 +240,9 @@ for entry in extracted_data:
             tool_by_year[tool].append(entry['year'])
 
 
+
+
+
 def regionize(list_to_be_regionized):
     region_list = []
     for k in region:
@@ -263,6 +276,77 @@ def dict_count(mm):
     for k in mm:
         mismatch_dict[k] += 1
     return mismatch_dict
+
+#create dictionaries that count number of particular mismatches by country
+dar = dict_count(authorRepresentation)
+dam = dict_count(allMismatch)
+dmm = dict_count(mismatch)
+dfamm = dict_count(firstAuthorMismatch)
+dlamm = dict_count(lastAuthorMismatch)
+dsam = dict_count(singleAuthorMismatch)
+dmam = dict_count(middleAuthorMismatch)
+
+# add mismatch dictionaries to nested dictionary
+for key in unsdAll:
+    for country, value in dar.items():
+        if country == key:
+            unsdAll[key]['authorRepresentationTotal'] = value
+    for country, value in dam.items():
+        if country == key:
+            unsdAll[key]['allMismatchTotal'] = value
+    for country, value in dmm.items():
+        if country == key:
+            unsdAll[key]['mismatchTotal'] = value
+    for country, value in dfamm.items():
+        if country == key:
+            unsdAll[key]['firstAuthorMismatchTotal'] = value
+    for country, value in dlamm.items():
+        if country == key:
+            unsdAll[key]['lastAuthorMismatchTotal'] = value
+    for country, value in dmam.items():
+        if country == key:
+            unsdAll[key]['middleAuthorMismatchTotal'] = value
+    for country, value in dsam.items():
+        if country == key:
+            unsdAll[key]['singleAuthorMismatchTotal'] = value
+
+print('country',',','developmentStatus',',','region',',', 'subregion',',','authorRepresentation',',','allMismatch',',',
+      'mismatchTotal',',','firstAuthorMismatchTotal',',','lastAuthorMismatchTotal',',','middleAuthorMismatchTotal',',','singleAuthorMismatchTotal')
+#print dictionary as csv
+for key in unsdAll:
+    ar =''
+    if 'authorRepresentationTotal' in unsdAll[key]:
+        ar = unsdAll[key]['authorRepresentationTotal']
+    am =''
+    if 'allMismatchTotal' in unsdAll[key]:
+        am = unsdAll[key]['allMismatchTotal']    
+    mm =''
+    if 'mismatchTotal' in unsdAll[key]:
+        mm = unsdAll[key]['mismatchTotal']
+    fam =''
+    if 'firstAuthorMismatchTotal' in unsdAll[key]:
+        fam = unsdAll[key]['firstAuthorMismatchTotal']
+    lam =''
+    if 'lastAuthorMismatchTotal' in unsdAll[key]:
+        lam = unsdAll[key]['lastAuthorMismatchTotal']
+    mam =''
+    if 'middleAuthorMismatchTotal' in unsdAll[key]:
+        mam = unsdAll[key]['middleAuthorMismatchTotal']
+    sam =''
+    if 'singleAuthorMismatchTotal' in unsdAll[key]:
+        sam = unsdAll[key]['singleAuthorMismatchTotal']
+    print(key, ',',
+          unsdAll[key]['development'],',',
+          unsdAll[key]['region'],',',
+          unsdAll[key]['subregion'],',',
+          ar,',',
+          am,',',
+          mm,',',
+          fam,',',
+          lam,',',
+          mam,',',
+          sam)
+
 
 
 def d_countrymatcher(dictionary1,dictionary2):
@@ -311,9 +395,31 @@ def d_matcher(dictionary1,dictionary2,header):
             print(k2, ',' , ',' , ',' , v2)
                 
                 
-                
-                
-                
-                
-                
-                
+def d_countrymatcher2(dictionary1,dictionary2):
+    print('country,development,region,subregion,percentMismatch,v1,v2,total')
+    
+    countrylist = []
+    
+    for kt,vt in dict_count(authorRepresentation).items():
+        for d in unsdAll:
+            for k1,v1 in dict_count(dictionary1).items():
+                for k2,v2 in dict_count(dictionary2).items():
+                    if kt == k1 == k2 == d:
+                        print(kt , ',' , unsdAll[d][0] , ',' , unsdAll[d][1] ,',' , unsdAll[d][2] , ',' , v1/v2*100 , ',' , v1 , ',' , v2 , ',' , vt)
+                        countrylist.append(kt)
+    
+    for kt,vt in dict_count(authorRepresentation).items():
+        for d in unsdAll:
+            for k1,v1 in dict_count(dictionary1).items():
+                for k2,v2 in dict_count(dictionary2).items():
+                    if kt not in countrylist:
+                        if kt == k2 == d: 
+                            print(kt , ',' , unsdAll[d][0] , ',' , unsdAll[d][1] ,',' , unsdAll[d][2] , ',' , ',' , ',' , v2 , ',' , vt)
+                            countrylist.append(kt)
+        
+    for kt,vt in dict_count(authorRepresentation).items():
+        for d in unsdAll:
+            if kt not in countrylist:
+                if kt ==d:
+                    print(kt , ',' , unsdAll[d][0] , ',' , unsdAll[d][1] ,',' , unsdAll[d][2] , ',' , ',' , ',' , ',' , vt)
+                    
