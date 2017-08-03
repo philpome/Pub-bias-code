@@ -7,7 +7,7 @@ UNITED ARAB EMIRATES,Developing,Asia,Western Asia,AE,ARE,United Arab Emirates,AR
 ARGENTINA,Developing,Americas,Latin America and the Caribbean,AR,ARG,Argentina,ARG,Argentina
 ARMENIA,Developing,Asia,Western Asia,AM,ARM,Armenia,ARM,Armenia
 AMERICAN SAMOA,Developing,Oceania,Polynesia,AS,ASM,American Samoa,ASM,American Samoa
-ANGUILLA,Developing,Americas,Latin America and the Caribbean,AI,AIA,Anguilla,ATG,Antigua and Barbuda
+ANTIGUA AND BARBUDA,Developing,Americas,Latin America and the Caribbean,AG,ATG,Antigua and Barbuda,ATG,Antigua and Barbuda
 AUSTRALIA,Developed,Oceania,Australia and New Zealand,AU,AUS,Australia,AUS,Australia
 AUSTRIA,Developed,Europe,Western Europe,AT,AUT,Austria,AUT,Austria
 AZERBAIJAN,Developing,Asia,Western Asia,AZ,AZE,Azerbaijan,AZE,Azerbaijan
@@ -219,7 +219,6 @@ FRENCH GUIANA,Developing,Americas,Latin America and the Caribbean,GF,GUF,French 
 LAND ISLANDS,Developed,Europe,Northern Europe,AX,ALA,Åland Islands,,
 ANTARCTICA,none,none,none,AQ,ATA,Antarctica,,
 FRENCH SOUTHERN TERRITORIES,Developing,Africa,Sub-Saharan Africa,TF,ATF,French Southern Territories,,
-ANTIGUA AND BARBUDA,Developing,Americas,Latin America and the Caribbean,AG,ATG,Antigua and Barbuda,ATG,Antigua and Barbuda
 BONAIRE,Developing,Americas,Latin America and the Caribbean,BQ,BES,"Bonaire, Sint Eustatius and Saba",,
 SAINT BARTHOLEMY,Developing,Americas,Latin America and the Caribbean,BL,BLM,Saint Barthélemy,,
 BOUVET ISLAND,Developing,Americas,Latin America and the Caribbean,BV,BVT,Bouvet Island,,
@@ -248,3 +247,4 @@ HOLY SEE (VATICAN CITY STATE),Developed,Europe,Southern Europe,VA,VAT,Vatican Ci
 WALLIS AND FUTUNA ISLANDS,Developing,Oceania,Polynesia,WF,WLF,Wallis and Futuna,,
 SARK,Developed,Europe,Northern Europe,,,,,
 PITCAIRN,Developing,Oceania,Polynesia,PN,PCN,Pitcairn,,
+ANGUILLA,Developing,Americas,Latin America and the Caribbean,AI,AIA,Anguilla,,
