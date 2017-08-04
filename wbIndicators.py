@@ -56,7 +56,8 @@ indicatorList = ['NY.GDP.PCAP.PP.KD',
                  'UIS.XGOVEXP.IMF.56',
                  'SL.TLF.0714.ZS',
                  'SP.POP.SCIE.RD.P6',
-                 'GB.XPD.RSDV.GD.ZS']
+                 'GB.XPD.RSDV.GD.ZS',
+                 'AG.LND.TOTL.K2']
 
 for code in indicatorList:
     worldBankAppender(code)
