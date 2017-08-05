@@ -10,6 +10,8 @@ import wbdata
 import csv
 import json
 
+
+
 codeMatcher = []
 with open('UNSD_all_codes.csv', 'r') as rf:
     reader = csv.reader(rf)
@@ -18,12 +20,37 @@ with open('UNSD_all_codes.csv', 'r') as rf:
         temp['%s' % row[0]] = row[4]
         codeMatcher.append(temp)
 
+cc_dict = json.load(open('speciesPerCountry.json','r'))
+
+tabdata = json.load(open('tabdata.json','r'))
+
 
 for item in tabdata['data']:
     for code in codeMatcher:
         for key in code:
             if key == item['country']:
                 item['cc'] = code[key]
+
+
+for item in tabdata['data']:
+    for c in cc_dict:
+        if item['cc'] == c:            
+            item['gbifDiversity'] = cc_dict[c]
+
+centroids = {}
+coords = open('country_centroids_all.csv','rt')
+coords = csv.reader(coords)
+for row in coords:
+    centroids[row[12]] = {}
+    centroids[row[12]]['lat'] = float(row[0])
+    centroids[row[12]]['long']= float(row[1])
+   
+
+for item in tabdata['data']:
+    for centroid in centroids:
+        if item['cc'] == centroid:
+            item['lat'] = centroids[centroid]['lat']
+            item['long'] = centroids[centroid]['long']
 
 
 def worldBankAppender(indicator):

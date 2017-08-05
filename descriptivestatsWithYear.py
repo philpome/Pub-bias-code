@@ -429,3 +429,6 @@ for year in year_dict:
                 temp['singleAuthorMismatch'] = value
         
         tabdata['data'].append(temp)
+
+with open('tabdata.json','w') as wf:
+    json.dump(tabdata,wf,indent=4)
