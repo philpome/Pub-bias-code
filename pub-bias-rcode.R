@@ -1,5 +1,0 @@
-bias<-fromJSON("pgc_extracted_1-12019.json")
-head(bias,2)
-str(bias)
-bias_flat<-flatten(bias)
-str(bias_flat)
