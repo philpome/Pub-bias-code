@@ -22,4 +22,12 @@ plot(pubsbydiv$authorRepresentation~pubsbydiv$aggDiversity)
 #test for correlation
 cor.test(pubsbydiv$authorRepresentation, pubsbydiv$aggDiversity, method="spearman")
 cor.test(pubsbydiv$authorRepresentation, pubsbydiv$aggDiversity, method="kendall")
-
+#that was dumb, try it with a linear model instead
+model1<-glm(authorRepresentation~aggDiversity, data=pubsbydiv, family="poisson")
+summary(model1)
+#that's overdispersed, try a quasi-poisson or negative binomial model
+model2<-glm(authorRepresentation~aggDiversity, data=pubsbydiv, family="quasipoisson")
+summary(model2)
+model3<-glm.nb(authorRepresentation~aggDiversity, data=pubsbydiv)
+summary(model3)
+#let's go with the nb model
