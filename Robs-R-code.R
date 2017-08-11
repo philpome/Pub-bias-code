@@ -1,6 +1,7 @@
 require(jsonlite)
 require(ggplot2)
 require(lme4)
+require(MASS)
 
 pbdata <- fromJSON('~/Documents/PubBiasJazz/Pub-bias-code/workingDataset.json')
 pbdata <- pbdata$data
@@ -52,6 +53,7 @@ summary(model1)
 
 model2<-glm(authorRepresentation~aggDiversity, data=pubsbydiv, family="quasipoisson")
 summary(model2)
+
 model3<-glm.nb(authorRepresentation~aggDiversity, data=pubsbydiv)
 summary(model3)
 
