@@ -2,15 +2,57 @@ require(jsonlite)
 require(ggplot2)
 require(lme4)
 
-wd <- fromJSON('~/Documents/PubBiasJazz/Pub-bias-code/workingDataset.json')
-wd <- wd$data
-attach(wd)
+pbdata <- fromJSON('~/Documents/PubBiasJazz/Pub-bias-code/workingDataset.json')
+pbdata <- pbdata$data
+attach(pbdata)
 
-wd$authorRepresentation[is.na(wd$authorRepresentation)] <- 0
-wd$`Plant species (higher), threatened`[is.na(wd$`Plant species (higher), threatened`)] <- 0
-numpubs <- aggregate(cbind(`Plant species (higher), threatened`,gbifDiversity,authorRepresentation) ~ country + development,wd,sum)
+pbdata$authorRepresentation[is.na(pbdata$authorRepresentation)] <- 0
+pbdata$`Plant species (higher), threatened`[is.na(pbdata$`Plant species (higher), threatened`)] <- 0
+numpubs <- aggregate(cbind(`Plant species (higher), threatened`,gbifDiversity,authorRepresentation) ~ country + development,pbdata,sum)
 
 numpubs$gbifDiversity <- numpubs$gbifDiversity/38
 
 numpubs$tOd <- numpubs$`Plant species (higher), threatened`/numpubs$gbifDiversity
 
+test<-ggplot(pbdata, aes(`Plant species (higher), threatened`,mismatch,color=factor(subregion)))+geom_jitter()
+test
+
+#change NA's in the dataset to 0's (may need to do for authorRep too)
+pbdata$`Plant species (higher), threatened`[is.na(pbdata$`Plant species (higher), threatened`)]<-0
+
+#sum all the publications by for each country by year
+nump<-aggregate(authorRepresentation~country, pbdata, sum)
+
+#sum all the threatened plants by year
+planty<-aggregate(`Plant species (higher), threatened`~country,pbdata,sum)
+
+#sum all the gbif data by year
+bify<-aggregate(gbifDiversity~country,pbdata,mean)
+
+#merge all the datasets together
+numplanty<-merge(nump,planty,by="country")
+pubsbydiv<-merge(numplanty,bify,by="country")
+
+#create the biodiversity variable
+
+pubsbydiv$aggDiversity<-pubsbydiv$`Plant species (higher), threatened`/pubsbydiv$gbifDiversity
+plot(pubsbydiv$authorRepresentation~pubsbydiv$aggDiversity)
+
+#test for correlation
+
+cor.test(pubsbydiv$authorRepresentation, pubsbydiv$aggDiversity, method="spearman")
+cor.test(pubsbydiv$authorRepresentation, pubsbydiv$aggDiversity, method="kendall")
+
+#that was dumb, try it with a linear model instead
+
+model1<-glm(authorRepresentation~aggDiversity, data=pubsbydiv, family="poisson")
+summary(model1)
+
+#that's overdispersed, try a quasi-poisson or negative binomial model
+
+model2<-glm(authorRepresentation~aggDiversity, data=pubsbydiv, family="quasipoisson")
+summary(model2)
+model3<-glm.nb(authorRepresentation~aggDiversity, data=pubsbydiv)
+summary(model3)
+
+#let's go with the nb model
