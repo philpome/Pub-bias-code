@@ -64,3 +64,16 @@ model3<-glm.nb(authorRepresentation~aggDiversity, data=pubsbydiv)
 summary(model3)
 
 #let's go with the nb model
+
+#Negative binomial model for author representation as a function of UN's diversity index
+model.nb.ar <- glm.nb(np$authorRepresentation ~ np$AI)
+summary(model.nb.ar)
+
+#Negative binomial model for all mismatches as a function of UN's biodiversity index
+model.nb.amm <- glm.nb(np$allMismatch ~ np$AI)
+summary(model.nb.amm)
+
+#Negative binomial model for collaborations as a function of UN's biodiversity index
+model.nb.collab <- glm.nb(np$collab ~ np$AI)
+summary(model.nb.collab)
+
