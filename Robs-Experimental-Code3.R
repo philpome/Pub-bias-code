@@ -2,6 +2,8 @@
 #These will be filled with the for loop based on how we want them aggregated (sum, mean, etc...).
 np.country <- vector()
 np.development <- vector()
+np.region <- vector()
+np.subregion <- vector()
 np.LandArea <- vector()
 np.gbifDiversity <- vector()
 np.DI <- vector()
@@ -19,6 +21,8 @@ for (i in seq(length(unique(pbdata$country)))) {
 
   np.country[i] <- unique(pbdata$country)[i]
   np.development[i] <- unique(pbdata$development[pbdata$country==unique(pbdata$country)[i]])
+  np.region[i] <- unique(pbdata$region[pbdata$country==unique(pbdata$country)[i]])
+  np.subregion[i] <- unique(pbdata$subregion[pbdata$country==unique(pbdata$country)[i]])
   np.LandArea[i] <- mean(pbdata$`Land area (sq. km)`[pbdata$country==unique(pbdata$country)[i]],na.rm=TRUE)
   np.gbifDiversity[i] <- mean(pbdata$gbifDiversity[pbdata$country==unique(pbdata$country)[i]],na.rm=TRUE)
   np.DI[i] <- mean(pbdata$DI[pbdata$country==unique(pbdata$country)[i]],na.rm=TRUE)
@@ -34,6 +38,8 @@ for (i in seq(length(unique(pbdata$country)))) {
 #Data columns are then bound to a dataframe
 np <- data.frame(country = np.country,
                  development = np.development,
+                 region = np.region,
+                 subregion = np.subregion,
                  LandArea = np.LandArea,
                  gbifDiversity = np.gbifDiversity,
                  DI = np.DI,
@@ -45,6 +51,9 @@ np <- data.frame(country = np.country,
                  allMismatch = np.allMismatch
   
 )
+
+#create column that shows collaboration by subtracting allMismatches from mismatches
+np$collab <- np$mismatch - np$allMismatch
 
 #Linear models of richness as a function of area are used to find the equation of a best fit line.
 #We can use that best fit line to determine the expected richness based on the area of the country.
