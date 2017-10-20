@@ -9,6 +9,12 @@ attach(pbdata)
 
 pbdata$authorRepresentation[is.na(pbdata$authorRepresentation)] <- 0
 pbdata$`Plant species (higher), threatened`[is.na(pbdata$`Plant species (higher), threatened`)] <- 0
+pbdata$DI <- as.numeric(pbdata$DI)
+pbdata$AI <- as.numeric(pbdata$AI)
+pbdata$PlantsTotal <- as.numeric(pbdata$PlantsTotal)
+pbdata$PlantsEndemic <- as.numeric(pbdata$PlantsEndemic)
+
+
 numpubs <- aggregate(cbind(`Plant species (higher), threatened`,gbifDiversity,authorRepresentation) ~ country + development,pbdata,sum)
 
 numpubs$gbifDiversity <- numpubs$gbifDiversity/38

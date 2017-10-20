@@ -53,6 +53,17 @@ for item in tabdata['data']:
             item['long'] = centroids[centroid]['long']
 
 
+with open('UNSD_all_codes.csv', 'r') as rf:
+    reader = csv.reader(rf)
+    for row in reader:
+        for item in tabdata['data']:
+            if item['cc'] == row[4]:
+                item['DI'] = row[9]
+                item['AI'] = row[10]
+                item['PlantsTotal'] = row[11]
+                item['PlantsEndemic'] = row[12]
+
+
 def worldBankAppender(indicator):
     for occ in wbdata.get_data(indicator):
         for item in tabdata['data']:
