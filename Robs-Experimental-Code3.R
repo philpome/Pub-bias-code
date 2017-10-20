@@ -1,3 +1,5 @@
+#Create empty vector for each of the columns in the aggregated dataframe.
+#These will be filled with the for loop based on how we want them aggregated (sum, mean, etc...).
 np.country <- vector()
 np.development <- vector()
 np.LandArea <- vector()
@@ -9,6 +11,9 @@ np.PlantsEndemic <- vector()
 np.authorRepresentation <- vector()
 np.mismatch <- vector()
 np.allMismatch <- vector()
+
+#For loop that creates an index number for each country, 
+#then aggregates the temporal data to country summaries based on how we want that data aggregated (sum,mean,factor).
 
 for (i in seq(length(unique(pbdata$country)))) { 
 
@@ -26,6 +31,7 @@ for (i in seq(length(unique(pbdata$country)))) {
   
 }
 
+#Data columns are then bound to a dataframe
 np <- data.frame(country = np.country,
                  development = np.development,
                  LandArea = np.LandArea,
@@ -40,6 +46,9 @@ np <- data.frame(country = np.country,
   
 )
 
+#Linear models of richness as a function of area are used to find the equation of a best fit line.
+#We can use that best fit line to determine the expected richness based on the area of the country.
+#If the variation from the expected biodiversity shows a relative richness normalizing for land area.
 
 lm(log(np$gbifDiversity)~log(np$LandArea))
 lm(log(np$PlantsTotal)~log(np$LandArea))
