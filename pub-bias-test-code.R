@@ -20,9 +20,9 @@ pbdata$`Plant species (higher), threatened`[is.na(pbdata$`Plant species (higher)
 nump<-aggregate(authorRepresentation~country, pbdata, sum)
 #sum all the threatened plants by year
 planty<-aggregate(`Plant species (higher), threatened`~country,pbdata,sum)
-#sum all the gbif data by year
+#take mean of all gbif data by year
 bify<-aggregate(gbifDiversity~country,pbdata,mean)
-#trying to add AvTD to bify dataset
+#add AvTD to available data (then merge below)
 avtd<-read.csv("AvTD_by_country.csv", header=T)
 #merge all the datasets together
 numpavtd<-merge(nump,avtd,by="country")
@@ -83,4 +83,31 @@ plot(amodel3)
 
 #### building more features into pubsbydiv dataset####
 head(pbdata,2)
-#add mismatches
+
+##add mismatches
+#sum all mismatchs
+allmm<-aggregate(allMismatch~country, pbdata,sum)
+#sum mismatches
+mm<-aggregate(mismatch~country,pbdata,sum)
+
+#sum first author mismatches
+firstmm<-aggregate(firstAuthorMismatch~country,pbdata,sum)
+allandmm<-merge(allmm,mm,by="country")
+allandmmandfirst<-merge(allandmm,firstmm,by="country")
+pubsbydiv<-merge(pubsbydiv,allandmmandfirst,by="country")
+
+
+#### Plots ####
+plot(pubsbydiv$allMismatch~pubsbydiv$aggDiversity)
+plot(log10(pubsbydiv$authorRepresentation)~log10(pubsbydiv$aggDiversity))
+plot(pubsbydiv$allMismatch~pubsbydiv$AvTD)
+
+a2model1<-glm(allMismatch~AvTD, data=pubsbydiv,family="quasipoisson")
+summary(a2model1) #yikes
+plot(amodel1)
+
+a2model2<-glm(allMismatch~aggDiversity,data=pubsbydiv,family="quasipoisson")
+summary(a2model2)
+
+write.csv(pubsbydiv,file="TEMPpubsbydiv.csv")
+
