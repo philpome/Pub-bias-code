@@ -7,6 +7,7 @@ library("ggplot2") # who wouldn't
 library("MASS") # for the negative-binom glm
 library("ggrepel") # labeling points that don't overlap in ggplot
 
+
 #### Dataset prep ####
 pbdata<-fromJSON("workingDataset.json",flatten=TRUE)
 pbdata<-pbdata$data
@@ -16,24 +17,58 @@ test
 
 #change NA's in the dataset to 0's (may need to do for authorRep too)
 pbdata$`Plant species (higher), threatened`[is.na(pbdata$`Plant species (higher), threatened`)]<-0
+
 #sum all the publications by for each country by year
 nump<-aggregate(authorRepresentation~country, pbdata, sum)
+
 #sum all the threatened plants by year
 planty<-aggregate(`Plant species (higher), threatened`~country,pbdata,sum)
+
 #take mean of all gbif data by year
 bify<-aggregate(gbifDiversity~country,pbdata,mean)
+
 #add AvTD to available data (then merge below)
 avtd<-read.csv("AvTD_by_country.csv", header=T)
-#merge all the datasets together
-numpavtd<-merge(nump,avtd,by="country")
-numplanty<-merge(planty,numpavtd,by="country")
-pubsbydiv<-merge(numplanty,bify,by="country")
 
-#create the biodiversity variable
+#get WB/economic data together (need to take mean for these):
+WBdata<-aggregate(cbind(pbdata$`Land area (sq. km)`, pbdata$`GDP per capita, PPP (constant 2011 international $)`,pbdata$`GINI index (World Bank estimate)`)~country, data=pbdata, FUN="mean")
+names(WBdata)<-c("country","area","GDP","GINI") #apply col names
+
+###get additional author representation 
+##add mismatches
+#sum all mismatchs
+#need to do something about NA's. using na.action=na.pass just makes everything NA. Not doing anything about it results in only 16 obs.
+pbdata$authorRepresentation[is.na(pbdata$authorRepresentation)]<-0
+
+author_mm<-aggregate(cbind(pbdata$allMismatch, pbdata$mismatch, pbdata$singleAuthorMismatch)~country, data=pbdata, FUN="sum", na.action=na.pass, na.rm=TRUE)
+sapply(author_mm, function(y) sum(is.na(y)))
+
+
+names(author_mm)<-c("country","allmm","mm","onemm")
+
+#it seems like we have a lot of NAs and that will limit our dataset considerably. To get a sense of what vars may actually be useful, let's see NA counts for each var:
+na_count<-sapply(pbdata, function(y) sum(is.na(y)))
+na_count<-data.frame(na_count)
+
+#merge all the datasets together
+numpavtd<-merge(nump,avtd,by="country") #137obs
+numplanty<-merge(planty,numpavtd,by="country") #137obs
+bifyplanty<-merge(numplanty,bify,by="country") #137
+authbifplanty<-merge(bifyplanty,author_mm,by="country") 
+pubsbydiv<-merge(authbifplanty,WBdata,by="country")
+
+
+
+####create the biodiversity variables####
+#aggregated biodiv
 pubsbydiv$aggDiversity<-pubsbydiv$`Plant species (higher), threatened`/pubsbydiv$gbifDiversity
+# area-based diversity:
+pubsbydiv$gbifarea<-datadata$gbifDiversity/datadata$area
+
 
 #### Plots ####
 plot(pubsbydiv$authorRepresentation~pubsbydiv$aggDiversity)
+plot(pubsbydiv$authorRepresentation~pubsbydiv$gbifarea)
 plot(log10(pubsbydiv$authorRepresentation)~log10(pubsbydiv$aggDiversity))
 plot(pubsbydiv$authorRepresentation~pubsbydiv$AvTD)
 plot(pubsbydiv$authorRepresentation~pubsbydiv$Richness) #not meaningful since area
@@ -81,20 +116,6 @@ amodel3<-glm.nb(authorRepresentation~AvTD, data=pubsbydiv)
 summary(amodel3)
 plot(amodel3)
 
-#### building more features into pubsbydiv dataset####
-head(pbdata,2)
-
-##add mismatches
-#sum all mismatchs
-allmm<-aggregate(allMismatch~country, pbdata,sum)
-#sum mismatches
-mm<-aggregate(mismatch~country,pbdata,sum)
-
-#sum first author mismatches
-firstmm<-aggregate(firstAuthorMismatch~country,pbdata,sum)
-allandmm<-merge(allmm,mm,by="country")
-allandmmandfirst<-merge(allandmm,firstmm,by="country")
-pubsbydiv<-merge(pubsbydiv,allandmmandfirst,by="country")
 
 
 #### Plots ####
@@ -110,4 +131,16 @@ a2model2<-glm(allMismatch~aggDiversity,data=pubsbydiv,family="quasipoisson")
 summary(a2model2)
 
 write.csv(pubsbydiv,file="TEMPpubsbydiv.csv")
+
+#### plots for Theresa ####
+#top countries:
+library("dplyr")
+require(dplyr)
+count(pubsbydiv,country) %>% arrange(pubsbydiv$country, pubsbydiv$authorRepresentation)
+
+ctryarr<-arrange(pubsbydiv$country, desc(pubsbydiv$authorRepresentation))
+
+ggplot(data=pubsbydiv, aes(country, authorRepresentation))
+
+ggplot(data=pubsbydiv, aes(x=reorder(country, authorRepresentation),y=authorRepresentation))+geom_bar(stat="identity")
 
