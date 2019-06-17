@@ -85,7 +85,7 @@ pubda<-rename(pubda, avtd = `AvTD`)
 View(pubda)
 
 attach(pubda)
-
+pubda<-pubda[-c(194),]
 
 #### Plots ####
 # Compare diversity indices
@@ -117,7 +117,62 @@ cor.test((spbyarea),(authorRepresentation))
 ggplot(data=pubda,aes(log(aggdiv),log(authorRepresentation)))+geom_point()+geom_smooth(method="lm")
 cor.test(aggdiv,authorRepresentation)
 
+#### Models and stuff ####
+hist(authorRepresentation)
 
+#ye ol glm:
+spa_arglm<-glm(cormismatch~AvTD+`GDP per capita, PPP (constant 2011 international $)`)
+summary(spa_arglm)
+
+#quasipoisson dist:
+spa_arqp<-glm(authorRepresentation~aggdiv+AvTD+Richness+`GINI index (World Bank estimate)`+`Population, total`+`GDP per capita, PPP (constant 2011 international $)`, family = "quasipoisson")
+summary(spa_arqp)
+
+arzi<-zeroinfl(authorRepresentation~aggdiv+AvTD+Richness+`GDP per capita, PPP (constant 2011 international $)`, dist = "negbin",data=pubda)
+summary(arzi)
+
+miszi<-zeroinfl(mismatch~aggdiv+AvTD+Richness+`GDP per capita, PPP (constant 2011 international $)`, dist = "negbin", data=pubda)
+summary(miszi)
+
+misqp<-glm(allMismatch~aggdiv+AvTD+Richness+`GDP per capita, PPP (constant 2011 international $)`, family="quasipoisson")
+summary(misqp)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+plot(gbifDiversity~AI)
+
+authr<-lmer(authorRepresentation~aggdiv+AvTD+`GINI index (World Bank estimate)`+`GDP per capita, PPP (constant 2011 international $)`+`Population, total`+(1|`Land area (sq. km)`))
+
+
+
+pubda$cormismatch<-mismatch[mismatch>0]
+summary(pubda)
+
+ggplot(data=pubda,aes(Richness,AvTD))+geom_point()+geom_smooth(method="lm")
+hist(Richness)
 
 plot(pubsbydiv$authorRepresentation~pubsbydiv$aggDiversity)
 plot(pubsbydiv$authorRepresentation~pubsbydiv$gbifarea)
