@@ -125,11 +125,31 @@ spa_arglm<-glm(cormismatch~AvTD+`GDP per capita, PPP (constant 2011 internationa
 summary(spa_arglm)
 
 #quasipoisson dist:
-spa_arqp<-glm(authorRepresentation~aggdiv+AvTD+Richness+`GINI index (World Bank estimate)`+`Population, total`+`GDP per capita, PPP (constant 2011 international $)`, family = "quasipoisson")
+spa_arqp<-glm(authorRepresentation~aggdiv+AvTD+Richness+`GDP per capita, PPP (constant 2011 international $)`, family = "quasipoisson")
 summary(spa_arqp)
 
-arzi<-zeroinfl(authorRepresentation~aggdiv+AvTD+Richness+`GDP per capita, PPP (constant 2011 international $)`, dist = "negbin",data=pubda)
-summary(arzi)
+# Zero inflated negative binomial
+arzi1<-zeroinfl(authorRepresentation~aggdiv+AvTD+Richness+`GDP per capita, PPP (constant 2011 international $)`, dist = "negbin",data=pubda)
+summary(arzi1)
+
+
+arzi2<-zeroinfl(authorRepresentation~aggdiv+AvTD+`GDP per capita, PPP (constant 2011 international $)`, dist = "negbin",data=pubda)
+vuong(arzi1, arzi2)
+
+
+#### Hurdle models ####
+#Need to pick out our favorite variables and then see which distribution is best to use.
+hurzi1<-hurdle(authorRepresentation~spbyarea+AvTD+`GINI index (World Bank estimate)`,data=pubda)
+summary(hurzi1)
+
+hurzi2<-hurdle(authorRepresentation~`GINI index (World Bank estimate)`,data=pubda)
+summary(hurzi2)
+vuong(hurzi1,hurzi2)
+
+hurzi0<-hurdle(authorRepresentation~1,data=pubda)
+summary(hurzi0)
+vuong(hurzi0,hurzi2) #doesn't work on account of diff # obs
+
 
 miszi<-zeroinfl(mismatch~aggdiv+AvTD+Richness+`GDP per capita, PPP (constant 2011 international $)`, dist = "negbin", data=pubda)
 summary(miszi)
